@@ -18,8 +18,6 @@ const Gallery = ({search,userId,boardId}) => {
   if(status === "error") return "Something went wrong"
   if(status === "pending") return "Loading..."
 
-  console.log(data)
-
   const allPins = data?.pages.flatMap((page)=>page.pins) || []
   return (
     <InfiniteScroll 
