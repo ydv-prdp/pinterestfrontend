@@ -17,7 +17,7 @@ const Comments = ({id}) => {
   return (
     <div className="flex flex-1 flex-col gap-4 sm:max-h-[75vh]">
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
-        <span className="">{data.length} comments</span>
+        <span className="">{data.length == 0 ? "No comments" : data.length + " Comments"}</span>
         {data.map((item)=>(
           <div className="flex gap-4" key={item._id}>
           <ImageComp src={item.user.img} alt="Logo" className={"w-[32px] h-[32px] object-cover rounded-full"}/>

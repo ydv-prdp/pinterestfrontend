@@ -1,15 +1,29 @@
 import { useState } from 'react'
 import ImageComp from '../../components/image/ImageComp'
+import apiRequest from '../../utils/apiRequest'
+
 const AuthPage = () => {
   const [isRegister, setIsRegister] =  useState(false)
   const [error, setError] = useState("")
+  const handleSubmit = async(e)=>{
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    const data = Object.fromEntries(formData)
+    try{
+      const res =await  apiRequest.post(`/users/auth/${isRegister ? "login" : "register"}`,data)
+      setError("")
+      console.log(res)
+    }catch(err){
+      setError(err.response.data.message)
+    }
+  }
   return (
     <div className="w-[100vw] h-[100vh] flex items-center justify-center">
       <div className='flex flex-col items-center justify-center gap-8 p-8 rounded-[32px] shadow-2xl'>
         <ImageComp path={"/general/logo.png"} className={"h-[36px] w-[36px]"}/>
         <h1 className='font-bold'>{isRegister ?  "Login to your account": "Create an account"}</h1>
         {isRegister ? (
-          <form key="loginForm" className='w-[100%] flex flex-col gap-4'>
+          <form key="loginForm" className='w-[100%] flex flex-col gap-4' onSubmit={handleSubmit}>
           <div className='formGroup'>
             <label htmlFor='email'>Email</label>
             <input type="email" placeholder='Email' required name='email' id='email'/>
@@ -23,10 +37,10 @@ const AuthPage = () => {
           {error && <p className='text-red-500'>{error}</p>}
         </form>
         ):(
-          <form key="registerForm" className='w-[100%] flex flex-col gap-4'>
+          <form key="registerForm" className='w-[100%] flex flex-col gap-4' onSubmit={handleSubmit}>
           <div className='formGroup'>
             <label htmlFor='username'>Username</label>
-            <input type="text" placeholder='Username' required name='text' id='text'/>
+            <input type="text" placeholder='Username' required name='username' id='username'/>
           </div>
           <div className='formGroup'>
             <label htmlFor='displayName'>Name</label>
