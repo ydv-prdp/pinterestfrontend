@@ -1,15 +1,43 @@
 import { useState } from "react"
 import ImageComp from "../image/ImageComp"
 import EmojiPicker from "emoji-picker-react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery,useMutation,useQueryClient  } from "@tanstack/react-query"
 import apiRequest from "../../utils/apiRequest"
 import { format } from "timeago.js"
 const Comments = ({id}) => {
   const [open,setOpen] = useState(false)
+  const [desc, setDesc] = useState("")
+  const queryClient = useQueryClient();
   const { isPending, error, data } = useQuery({
     queryKey: ["comments", id],
     queryFn: () => apiRequest.get(`/comment/${id}`).then((res) => res.data)
   })
+  const handleEmojiClick = (emoji)=>{
+    setDesc((prev)=>prev+" " + emoji.emoji)
+    setOpen(false)
+  }
+  const addComment = async (comment) => {
+    const res = await apiRequest.post("/comment", comment);
+    return res.data;
+  };
+  const mutation = useMutation({
+    mutationFn: addComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", id] });
+      setDesc("");
+      setOpen(false);
+    },
+  });
+  const handleSubmit = async(e)=>{
+    e.preventDefault()
+    mutation.mutate({
+      description: desc,
+      pin: id,
+    });
+  }
+  
+ 
+
   if (isPending) return "Loading"
   if (error) return "An error has occurred: " + error.message;
   if (!data) return "Board not found"
@@ -41,12 +69,12 @@ const Comments = ({id}) => {
           </div>
         </div>     
       </div> */}
-      <form className="bg-[#f1f1f1] p-4 rounded-[32px] flex items-center">
-        <input  type="text" placeholder="Add a comment" className="flex-1 px-4 border-none bg-transparent text-[16px] outline-none"/>
+      <form className="bg-[#f1f1f1] p-4 rounded-[32px] flex items-center" onSubmit={handleSubmit}>
+        <input  type="text" placeholder="Add a comment" onChange={(e)=>setDesc(e.target.value)} value={desc} className="flex-1 px-4 border-none bg-transparent text-[16px] outline-none"/>
         <div className="cursor-pointer relative text-[20px] ">
         <div onClick={()=>setOpen(!open)}>😊</div>
         {open &&<div className="absolute right-0 bottom-[50px]">
-          <EmojiPicker/>
+          <EmojiPicker onEmojiClick={handleEmojiClick}/>
         </div>}
       </div>
       </form>
