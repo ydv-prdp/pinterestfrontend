@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router"
 import apiRequest from "../../utils/apiRequest"
 import Boards from "../../components/boards/Boards"
+import FollowButton from "./FollowButton"
 
 const UserProfile = () => {
   const [type, setType] = useState("created")
@@ -24,12 +25,12 @@ const UserProfile = () => {
       />
       <h1 className="text-[36px]">{data?.displayName}</h1>
       <span className="text-gray-400 font-[300]">@{data?.username}</span>
-      <div className="font-[500]">10 followers . 20 following</div>
+      <div className="font-[500]">{data.followerCount} followers . {data.followingCount} following</div>
       <div className="flex items-center gap-4">
         <ImageComp path={'/general/share.svg'} alt="Logo" />
         <div className="flex gap-4">
           <button className="bg-[#f1f1f1] text-black px-4 py-2 rounded-full cursor-pointer hover:opacity-50">Message</button>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-full cursor-pointer hover:opacity-50">Follow</button>
+          <FollowButton isFollowing={data.isFollowing} username={data.username}/>
         </div>
         <ImageComp path={'/general/more.svg'} alt="Logo" />
       </div>
